@@ -7,6 +7,7 @@ import {
   Text,
   Button,
   Stack,
+  Grid,
   useBreakpointValue,
 } from "@chakra-ui/react";
 import Character from "./Character";
@@ -23,7 +24,7 @@ const List = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // cambiar el tamaño del input según el tamaño de la pantalla
+  // Cambiar el tamaño del input según el tamaño de la pantalla
   const inputSize = useBreakpointValue({ base: "sm", md: "md" });
 
   useEffect(() => {
@@ -105,7 +106,15 @@ const List = () => {
             <option value="Genderless">Genderless</option>
             <option value="unknown">Unknown</option>
           </Select>
-          <Button colorScheme="teal" onClick={resetFilters} size={inputSize}>
+          <Button
+            colorScheme="teal"
+            onClick={resetFilters}
+            size={inputSize}
+            width={{ base: "full", md: "auto" }}
+            minWidth="200px"
+            fontSize={{ base: "sm", md: "md" }}
+            whiteSpace="nowrap"
+          >
             Restablecer Filtros
           </Button>
         </Stack>
@@ -132,11 +141,21 @@ const List = () => {
         </Text>
       )}
 
-      {!loading &&
-        !error &&
-        filteredCharacters.map((char) => (
-          <Character key={char.id} character={char} />
-        ))}
+      {/* Usamos Grid para mostrar los personajes en columnas */}
+      <Grid
+              templateColumns={{
+                  base: "repeat(1, 1fr)",  // 1 columna en pantallas pequeñas
+                  sm: "repeat(2, 1fr)",    // 3 columnas en pantallas medianas
+                  lg: "repeat(auto-fill, minmax(250px, 1fr))",
+              }}
+        gap={4}
+      >
+        {!loading &&
+          !error &&
+          filteredCharacters.map((char) => (
+            <Character key={char.id} character={char} />
+          ))}
+      </Grid>
 
       {/* Paginación */}
       {!loading && !error && totalPages > 1 && (
@@ -150,11 +169,9 @@ const List = () => {
           >
             {"<"}
           </Button>
-          <Text
-            fontWeight="bold"
-            fontSize="lg"
-            alignSelf="center"
-          >{`Página ${page} de ${totalPages}`}</Text>
+          <Text fontWeight="bold" fontSize="lg" alignSelf="center">
+            {`Página ${page} de ${totalPages}`}
+          </Text>
           <Button
             onClick={() => setPage(page + 1)}
             disabled={page === totalPages}
